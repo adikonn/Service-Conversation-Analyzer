@@ -1,0 +1,19 @@
+---
+version: '3.4'
+services:
+  ollama:
+    image: "ollama/ollama"
+    ports:
+      - 11434:11434
+    volumes:
+      - answerthis_ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+volumes:
+  ollama:
+...
