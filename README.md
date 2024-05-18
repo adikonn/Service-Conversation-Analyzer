@@ -14,6 +14,7 @@
 $ git clone https://github.com/Murkat-git/Service-Conversation-Analyzer
 $ cd Service-Conversation-Analyzer
 $ cp example.env .env
+$ mkdir music
 $ conda env create -n conversation-analyzer -f environment.yml
 $ docker compose pull
 ```
@@ -22,5 +23,6 @@ $ docker compose pull
 ## Использование
 ```bash
 $ docker compose up -d
+$ conda activate conversation-analyzer
 $ python transcribe.py
 ```
