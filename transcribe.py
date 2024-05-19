@@ -1,4 +1,5 @@
 from io import BytesIO
+from db_work import add_chunk, add_to_faiss
 
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ContentType
@@ -34,7 +35,9 @@ async def text_to_speech(message: Message):
     await bot.download(file.file_id, audio)
     audio.seek(0)
     text = ""
-    for chunk in get_diar(audio):
+    buttons = []
+    for i, chunk in enumerate(get_diar(audio), 1):
+        chunk_id = add_chunk(chunk)
         state, reasons = check_msg(chunk)
         if state == False:
             text += "❌" + chunk
@@ -43,16 +46,17 @@ async def text_to_speech(message: Message):
         else:
             text += "✔️" + chunk
         text += "\n\n"
-        await bot.edit_message_text(
-            text, message.chat.id, msg.message_id, parse_mode="html"
-        )
-    # if file_format == 'mp3':
-    #     sound = AudioSegment.from_mp3(audio)
-    #     sound.export(audio, format="wav")
-    # elif file_format == 'wav':
-    #     pass
-    #
-    # text = s2t(audio)
+        buttons.append(types.InlineKeyboardButton(text=f'{i}',
+                                                  callback_data=f'{chunk_id}_{i}'))
+        keyboard = types.InlineKeyboardMarkup(inline_keyboard=split_list_to_chunks(buttons))
+        await bot.edit_message_text(text, message.chat.id, msg.message_id, parse_mode='html', reply_markup=keyboard)
+
+
+@dp.callback_query()
+async def to_faiss(call: types.CallbackQuery):
+    chunk_id, key_id = call.data.split('_')
+    add_to_faiss(chunk_id)
+    await call.message.reply(f'Чанк №{key_id} добавлен в базу Faiss')
 
 
 @dp.message(F.content_type == ContentType.VOICE)
