@@ -31,5 +31,4 @@ def get_diar(file):
         filename = f"music/{uuid1()}.wav"
         segment = audio_file[turn.start * 1000 : turn.end * 1000]
         segment.export(filename, format="wav")
-        yield f"\n{seconds_to_mins(turn.start)} - {seconds_to_mins(turn.end)} {speech_to_text(filename)[0]}"
-        # yield f"\n{seconds_to_mins(turn.start)} - {seconds_to_mins(turn.end)} <b>{speaker}:</b> {speech_to_text(filename)[0]}"
+        yield f"\n{i}. {seconds_to_mins(turn.start)} - {seconds_to_mins(turn.end)} {speech_to_text(filename)[0]}"
